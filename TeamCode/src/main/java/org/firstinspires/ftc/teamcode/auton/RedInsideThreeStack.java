@@ -1,19 +1,20 @@
 package org.firstinspires.ftc.teamcode.auton;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import com.pedropathing.geometry.*;
-import com.pedropathing.util.*;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Inside 3 Stack - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
-public class BlueInsideThreeStack extends OpMode implements DriveParams {
+@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
+public class RedInsideThreeStack extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -45,34 +46,34 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
     private boolean keepRunning = true;
 
     private final Pose startPose = new Pose(
-            20.386209877877745,
-            122.39783853885227,
-            Math.toRadians(135)
+            120.5,
+            120,
+            Math.toRadians(45)
     );
 
     private final Pose shootPose = new Pose(
-            60,
+            81.5,
             81,
-            Math.toRadians(135)
+            Math.toRadians(45)
     );
 
     private final Pose stack1Pose = new Pose(
-            16,
-            81,
-            Math.toRadians(0)
+            125.5,
+            82,
+            Math.toRadians(180)
     );
     private final Pose stack2Pose = new Pose(
-            18,
+            81.5,
             81,
-            Math.toRadians(0)
+            Math.toRadians(180)
     );
 
-    private final Pose stack2aPose = new Pose(63.000, 54.000, Math.toRadians(0));
-    private final Pose stack2bPose = new Pose(18.000, 59.000, Math.toRadians(0));
+    private final Pose stack2aPose = new Pose(82, 55, Math.toRadians(185));
+    private final Pose stack2bPose = new Pose(125, 58, Math.toRadians(180)); //59
 
-    private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
-    private final Pose stack3bPose = new Pose(18.000, 33.000, Math.toRadians(0));
-    private final Pose endPose = new Pose(39,78, Math.toRadians(135));
+    private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(180));
+    private final Pose stack3bPose = new Pose(123.5, 33, Math.toRadians(180));
+    private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,

@@ -1,19 +1,20 @@
 package org.firstinspires.ftc.teamcode.auton;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import com.pedropathing.geometry.*;
-import com.pedropathing.util.*;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Inside 3 Stack - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
-public class BlueInsideThreeStack extends OpMode implements DriveParams {
+@Autonomous(name = "Blue Outside 1 Stack+ - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
+public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -35,90 +36,65 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         SHOOT_STACK1,
         DRIVE_STACK2POS_SHOOTPOS,
         SHOOT_STACK2,
-        DRIVE_SHOOTPOS_ENDPOS,
-        DRIVE_STACK3POS_SHOOTPOS,
-        SHOOT_STACK3
+        DRIVE_SHOOTPOS_ENDPOS
+
     }
 
     PathState pathState;
 
     private boolean keepRunning = true;
 
-    private final Pose startPose = new Pose(
-            20.386209877877745,
-            122.39783853885227,
-            Math.toRadians(135)
-    );
+    private final Pose startPose = new Pose( 59.178,  9.841, Math.toRadians(109) );
 
     private final Pose shootPose = new Pose(
-            60,
-            81,
-            Math.toRadians(135)
+            59.178,       //59
+               9.841,        // 11
+            Math.toRadians(109)
     );
 
-    private final Pose stack1Pose = new Pose(
-            16,
-            81,
-            Math.toRadians(0)
-    );
-    private final Pose stack2Pose = new Pose(
-            18,
-            81,
-            Math.toRadians(0)
-    );
+    private final Pose stack1aPose = new Pose(48.486, 34.415, Math.toRadians(0));
+    private final Pose stack1bPose = new Pose(18.549, 34.495, Math.toRadians(0) );
 
-    private final Pose stack2aPose = new Pose(63.000, 54.000, Math.toRadians(0));
-    private final Pose stack2bPose = new Pose(18.000, 59.000, Math.toRadians(0));
+    private final Pose stack1aRetPose = new Pose(53.934, 41.410, Math.toRadians(0) );
 
-    private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
-    private final Pose stack3bPose = new Pose(18.000, 33.000, Math.toRadians(0));
-    private final Pose endPose = new Pose(39,78, Math.toRadians(135));
+
+    private final Pose stack2aPose = new Pose(4.753, 63.481, Math.toRadians(90));
+    private final Pose stack2bPose = new Pose(9.135, 8.841, Math.toRadians(90));
+
+    private final Pose stack2RetPose = new Pose(42.910, 62.457, Math.toRadians(90));
+
+    private final Pose endPose = new Pose(54.744,35.89, Math.toRadians(109));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,
                 driveStack1PosShootPos,
                 driveStack2PosEndPos,
                 driveStack2PosShootPos,
-                driveStack3PosEndPos,
-                driveStack3PosShootPos,
                 driveShootPosEndPos;
 
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
-        driveStartPosShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+        driveStack1PosEndPos = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, stack1aPose))
+                .addPath(new BezierLine(stack1aPose, stack1bPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), stack1bPose.getHeading())
                 .build();
 
-        driveStack1PosEndPos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, stack1Pose))
-                .setLinearHeadingInterpolation(stack1Pose.getHeading(), stack1Pose.getHeading())
-                .build();
 
         driveStack1PosShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(stack1Pose, shootPose))
-                .setLinearHeadingInterpolation(stack1Pose.getHeading(), shootPose.getHeading())
+                .addPath(new BezierCurve(stack1bPose, stack2aPose, shootPose))
+                .setLinearHeadingInterpolation(stack1bPose.getHeading(), shootPose.getHeading())
                 .build();
 
         driveStack2PosEndPos = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, stack2aPose, stack2bPose))
-                .setLinearHeadingInterpolation(stack2aPose.getHeading(), stack2bPose.getHeading())
+                .setLinearHeadingInterpolation(shootPose.getHeading(), stack2bPose.getHeading())
                 .build();
 
         driveStack2PosShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(stack2bPose, shootPose))
+                .addPath(new BezierCurve(stack2bPose, stack2RetPose, shootPose))
                 .setLinearHeadingInterpolation(stack2bPose.getHeading(), shootPose.getHeading())
-                .build();
-
-        driveStack3PosEndPos = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, stack3aPose, stack3bPose))
-                .setLinearHeadingInterpolation(stack3aPose.getHeading(), stack3bPose.getHeading())
-                .build();
-
-        driveStack3PosShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(stack3bPose, shootPose))
-                .setLinearHeadingInterpolation(stack3bPose.getHeading(), shootPose.getHeading())
                 .build();
 
         driveShootPosEndPos = follower.pathBuilder()
@@ -129,11 +105,6 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
 
     public void statePathUpdate() {
         switch (pathState) {
-            case DRIVE_STARTPOS_SHOOTPOS:
-                follower.followPath(driveStartPosShootPos, true);
-                setPathState(PathState.SHOOT_PRELOAD); // reset the timer & make new state
-
-                break;
 
             case SHOOT_PRELOAD:
                 // check is follower done it's path?
@@ -189,26 +160,6 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                     } else if (shotsTriggered && !feederStopper.isBusy()) {
                         // shots are done free to transition
 
-                        follower.followPath(driveStack3PosEndPos, true);
-                        setPathState(PathState.DRIVE_STACK3POS_SHOOTPOS);
-                    }
-                }
-                break;
-            case DRIVE_STACK3POS_SHOOTPOS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveStack3PosShootPos, true);
-                    setPathState(PathState.SHOOT_STACK3); // reset the timer & make new state
-                }
-                break;
-            case SHOOT_STACK3:
-                // check is follower done it's path?
-                if (!follower.isBusy()) {
-                    // requested shots yet?
-                    if (!shotsTriggered) {
-                        feederStopper.fireShots(true);
-                        shotsTriggered = true;
-                    } else if (shotsTriggered && !feederStopper.isBusy()) {
-                        // shots are done free to transition
                         follower.followPath(driveShootPosEndPos, true);
                         setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
                     }
