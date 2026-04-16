@@ -2,23 +2,30 @@ package org.firstinspires.ftc.teamcode.auton;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Shooter {
-    private DcMotorEx shooter;
-
+    private DcMotorEx shooterLeft;
+    private DcMotorEx shooterRight;
     public Shooter(HardwareMap hardwareMap) {
-        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        shooter.setDirection(DcMotor.Direction.REVERSE);
+        shooterLeft = hardwareMap.get(DcMotorEx.class, "shooter_left");
+        shooterRight = hardwareMap.get(DcMotorEx.class, "shooter_right");
+        shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterLeft.setDirection(DcMotor.Direction.REVERSE);
+        shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterRight.setDirection(DcMotor.Direction.FORWARD);
+
     }
 
     public void run(double speed) {
-         shooter.setPower(speed);
+        shooterLeft.setPower(speed);
+        shooterRight.setPower(speed);
     }
 
     public void stop() {
-        shooter.setPower(0);
+        shooterLeft.setPower(0);
+        shooterRight.setPower(0);
     }
 
 }

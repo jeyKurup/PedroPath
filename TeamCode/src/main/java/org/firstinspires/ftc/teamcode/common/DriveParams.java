@@ -11,14 +11,18 @@ public interface DriveParams {
 
     // ------------ SHOOTER CONSTANTS ------------
     double SHOOTER_FULL_POWER = 1.0;
-    double SHOOTER_HALF_POWER = 0.5;
+    double SHOOTER_50P_POWER = 0.5;
     double SHOOTER_53P_POWER = 0.53;
+    double SHOOTER_52P_POWER = 0.52;
     double SHOOTER_55P_POWER = 0.55;
     double SHOOTER_56P_POWER = 0.57;
     double SHOOTER_57P_POWER = 0.57;
     double SHOOTER_60P_POWER = 0.60;
+    double SHOOTER_62P_POWER = 0.62;
     double SHOOTER_65P_POWER = 0.65;
     double SHOOTER_70P_POWER = 0.70;
+    // 5000 RPM goBILDA bare motor: 28 ticks/rev -> max ~2333 ticks/sec; 0.70 * 2333 ≈ 1633
+    double SHOOTER_70P_VELOCITY = 1633.0;
     double SHOOTER_72P_POWER = 0.72;
     double SHOOTER_75P_POWER = 0.75;
     double SHOOTER_80P_POWER = 0.8;
@@ -69,5 +73,6 @@ public interface DriveParams {
     public static double MIN_VOLTAGE = 10.0;       // Minimum safe voltage
     double FEEDER_STOP_POWER = 0.0;
     double FEEDER_FEED_POWER = 1.0;
+    double READY_STATE_WAIT_TIME = 1.0;
 
 }

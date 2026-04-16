@@ -3,38 +3,36 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 
 import java.util.List;
 
-
+@Disabled
 @TeleOp(name="TeleOp Decode Drive Game", group = "1")
-public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
+public class RobotAprilTagAlignmentOld extends LinearOpMode implements DriveParams{
 
     // create motor objects and initialize to null
-    private DcMotorEx leftFrontMotor  = null;
-    private DcMotorEx rightFrontMotor = null;
-    private DcMotorEx leftBackMotor   = null;
-    private DcMotorEx rightBackMotor  = null;
-    private DcMotorEx beltMotor = null;
+    private DcMotor leftFrontMotor  = null;
+    private DcMotor rightFrontMotor = null;
+    private DcMotor leftBackMotor   = null;
+    private DcMotor rightBackMotor  = null;
+    private DcMotor beltMotor = null;
 
-    private DcMotorEx encoderLeft = null;
-    private DcMotorEx encoderRight = null;
-    private DcMotorEx encoderAux = null;
-
-    private DcMotorEx shooterLeftMotor  = null;
-    private DcMotorEx shooterRightMotor  = null;
-    private DcMotorEx intakeRotateMotor  = null;
+    private DcMotor encoderLeft = null;
+    private DcMotor encoderRight = null;
+    private DcMotor encoderAux = null;
+    private DcMotor shooterRotateMotor  = null;
+    private DcMotor intakeRotateMotor  = null;
     private Servo   shooterAngle = null;
     private Servo pusher = null;
     private Servo stopper = null;
@@ -118,12 +116,12 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
         while (opModeIsActive()) {
             telemetry.addData("Battery voltage >", voltageSensor.getVoltage());
 
-            if (gamepad1.yWasPressed()) {
+            if (gamepad1.y) {
                 alreadyTriggeredDown = false;
                 alreadyTriggeredUp = false;
             }
 
-            checkDriveSpeedToggle(gamepad1.leftBumperWasPressed());
+            checkDriveSpeedToggle(gamepad1.left_bumper);
             checkShooterSpeedToggle();
 
             forward = -gamepad1.left_stick_y * currentSpeedCap;  // Reduce drive rate to currentSpeedCap.
@@ -132,22 +130,22 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
             if (forward != 0 || strafe != 0 || turn != 0) {
                 alignTurnOff();
             }
-            boolean currentButtonState = gamepad1.aWasPressed();
+            boolean currentButtonState = gamepad1.a;
             //
-            if (gamepad1.dpadUpWasPressed() && !alreadyTriggeredUp) {
+            if (gamepad1.dpad_up && !alreadyTriggeredUp) {
                 if (shooterPosition < 0.06) {
                     shooterPosition += 0.02;
                 }
                 alreadyTriggeredUp = true;
 
-            } else if (gamepad1.dpadDownWasPressed() && !alreadyTriggeredDown) {
+            } else if (gamepad1.dpad_down && !alreadyTriggeredDown) {
                 if (shooterPosition > 0) {
                     shooterPosition -= 0.02;
                 }
                 alreadyTriggeredDown = true;
             }
             //shooterAngle.setPosition(shooterPosition);
-            if (gamepad2.leftBumperWasPressed()) {
+            if (gamepad2.left_bumper) {
 
                 shooter(shooterSpeed);
             }
@@ -157,7 +155,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                 feeder.setPower(FEEDER_FEED_POWER);
             }
 
-            if (gamepad2.dpadDownWasPressed()) {
+            if (gamepad2.dpad_down) {
                 closeStopper();
             } else if (gamepad2.dpad_up) {
                 openStopper();
@@ -165,7 +163,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
             //    pusher.setPosition(0.2);
 
             //}
-            intake(gamepad1.xWasPressed());
+            intake(gamepad1.x);
             beltRun();
             //moveRobot(forward, strafe, turn);
 
@@ -181,7 +179,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
 
             if (isAligning) {
                 performAprilTagAlignmentNew();
-            } else if (gamepad1.leftTriggerWasPressed()) {
+            } else if (gamepad1.left_trigger > 0.3) {
                 performAprilTagAlign(forward, strafe, turn);
             }else {
                 manualDrive();
@@ -222,13 +220,13 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
      */
     private void checkShooterSpeedToggle(){
 
-        if (gamepad2.yWasPressed()){
+        if (gamepad2.y){
             shooterSpeed = SHOOTER_70P_POWER;
-        } else if (gamepad2.xWasPressed()) {
+        } else if (gamepad2.x) {
             shooterSpeed = SHOOTER_60P_POWER;
-        }else if (gamepad2.bWasPressed()){
+        }else if (gamepad2.b){
             shooterSpeed = SHOOTER_55P_POWER;
-        }else if (gamepad2.aWasPressed()) {
+        }else if (gamepad2.a) {
             shooterSpeed = SHOOTER_65P_POWER;
         }else if (gamepad2.rightBumperWasPressed()){
             shooterSpeed += .01;
@@ -247,22 +245,21 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        leftFrontMotor  = hardwareMap.get(DcMotorEx.class, "left_front");
-        rightFrontMotor = hardwareMap.get(DcMotorEx.class, "right_front");
-        leftBackMotor   = hardwareMap.get(DcMotorEx.class, "left_rear");
-        rightBackMotor  = hardwareMap.get(DcMotorEx.class, "right_rear");
+        leftFrontMotor  = hardwareMap.get(DcMotor.class, "left_front");
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "right_front");
+        leftBackMotor   = hardwareMap.get(DcMotor.class, "left_rear");
+        rightBackMotor  = hardwareMap.get(DcMotor.class, "right_rear");
 
-        shooterRightMotor  = hardwareMap.get(DcMotorEx.class, "shooter_right");
-        shooterLeftMotor  = hardwareMap.get(DcMotorEx.class, "shooter_left");
-        intakeRotateMotor  = hardwareMap.get(DcMotorEx.class, "intake");
-        beltMotor = hardwareMap.get(DcMotorEx.class, "belt");
+        shooterRotateMotor  = hardwareMap.get(DcMotor.class, "shooter");
+        intakeRotateMotor  = hardwareMap.get(DcMotor.class, "intake");
+        beltMotor = hardwareMap.get(DcMotor.class, "belt");
 
         shooterAngle = hardwareMap.get(Servo.class, "shooter_angle");
         //pusher = hardwareMap.get(Servo.class, "pusher");
         stopper = hardwareMap.get(Servo.class, "stopper");
         alignInd = hardwareMap.get(Servo.class, "alignled");
         feeder = hardwareMap.get(CRServo.class, "feeder");
-        feeder.setDirection(DcMotorEx.Direction.FORWARD);
+        feeder.setDirection(DcMotor.Direction.FORWARD);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -286,9 +283,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
         intakeRotateMotor.setDirection(DcMotor.Direction.REVERSE);
         intakeRotateMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        shooterLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        shooterRightMotor.setDirection(DcMotor.Direction.FORWARD);
-
+        shooterRotateMotor.setDirection(DcMotor.Direction.REVERSE);
         currentSpeedCap = SPEED_CAP_MIN;
         currentIntakeSpeed = 0.50;
         shooterAngle.setPosition(SHOOTER_ANGLE_05);
@@ -373,8 +368,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
      *
      */
     private void shooter(double speed){
-        shooterLeftMotor.setPower(speed); // currentShooterSpeed);
-        shooterRightMotor.setPower(speed);
+        shooterRotateMotor.setPower(speed); // currentShooterSpeed);
     }
 
     /**

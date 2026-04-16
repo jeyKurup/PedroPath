@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auton;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.geometry.*;
@@ -11,12 +12,10 @@ import com.pedropathing.util.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -29,6 +28,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.ArrayList;
 import java.util.List;
 
+@Disabled
 @Autonomous(name = "Blue Outside Collection & Shoot", group = "Pathing")
 public class BlueOutsideCollectionAndShoot extends OpMode implements DriveParams {
 
@@ -242,6 +242,7 @@ public class BlueOutsideCollectionAndShoot extends OpMode implements DriveParams
         belt = new Belt(hardwareMap);
 
         follower.setPose(startPose);
+        follower.setMaxPower(0.5);
 
         // Initialize webcam with EasyOpenCV
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(

@@ -8,6 +8,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -25,6 +26,8 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
     private Intake intake;
     private Belt belt;
     private boolean shotsTriggered = false;
+    private VoltageSensor voltageSensor;
+    private double shooterSpeed = SHOOTER_55P_POWER;
 
     public enum PathState {
         // START POSITION_END POSITION
@@ -69,10 +72,10 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
     );
 
     private final Pose stack2aPose = new Pose(82, 55, Math.toRadians(185));
-    private final Pose stack2bPose = new Pose(125, 58, Math.toRadians(180)); //59
+    private final Pose stack2bPose = new Pose(130.806, 57.821, Math.toRadians(180)); //59
 
     private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(180));
-    private final Pose stack3bPose = new Pose(123.5, 33, Math.toRadians(180));
+    private final Pose stack3bPose = new Pose(130.806, 34.069, Math.toRadians(180));
     private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
     private PathChain driveStartPosShootPos,
@@ -242,6 +245,7 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // TODO add in any other init mechanisms
         feederStopper.init(hardwareMap);
@@ -250,6 +254,7 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
+        shooterSpeed = getShooterSpeed(voltageSensor.getVoltage());
     }
 
     public void start() {
@@ -259,7 +264,7 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
     }
 
     public void robotStateUpdate() {
-        shooter.run(SHOOTER_55P_POWER);
+        shooter.run(shooterSpeed);
         intake.run(INTAKE_80P_POWER);
         belt.run();
     }
@@ -285,4 +290,13 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
     }
+
+    public double getShooterSpeed(double voltage) {
+        double speed = SHOOTER_55P_POWER;
+        if (voltage > 13.8) {
+            speed = SHOOTER_52P_POWER;
+        }
+        return speed;
+    }
+
 }

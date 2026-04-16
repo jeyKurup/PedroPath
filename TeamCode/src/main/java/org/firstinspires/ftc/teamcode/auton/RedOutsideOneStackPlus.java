@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Outside 1 Stack+ - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
-public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
+@Autonomous(name = "Red Outside 1 Stack+ - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
+public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -45,28 +45,28 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
     private boolean keepRunning = true;
 
     private final Pose startPose = new Pose(
-            59.178,
+            82.322,
             9.841,
-            Math.toRadians(112) );
+            Math.toRadians(71) );
 
     private final Pose shootPose = new Pose(
-            59.178,       //59
-               9.841,        // 11
-            Math.toRadians(112)
+            83.605,       //59
+               10.960,        // 11
+            Math.toRadians(71)
     );
 
-    private final Pose stack1aPose = new Pose(90.018, 37.494, Math.toRadians(0));
-    private final Pose stack1bPose = new Pose(15.156, 37.088, Math.toRadians(0) );
+    private final Pose stack1aPose = new Pose(52.996, 47.252, Math.toRadians(180));
+    private final Pose stack1bPose = new Pose(126.344, 38.265, Math.toRadians(180) );
 
-    private final Pose stack1aRetPose = new Pose(53.934, 41.410, Math.toRadians(112) );
+    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(71) );
 
-    private final Pose stack2aPose = new Pose(34.924, 68.461, Math.toRadians(19));
-    private final Pose stack2bPose = new Pose(2.545, 28.583, Math.toRadians(19));
-    private final Pose stack2cPose = new Pose(6.875, 8.114, Math.toRadians(19));
+    private final Pose stack2aPose = new Pose(131.530, 53.890, Math.toRadians(71));
+    private final Pose stack2bPose = new Pose(134.439, 20.459, Math.toRadians(160));
+    private final Pose stack2cPose = new Pose(132.365, 9.994, Math.toRadians(71));
 
-    private final Pose stack2RetPose = new Pose(35.170, 39.238, Math.toRadians(112));
+    private final Pose stack2RetPose = new Pose(99.936, 63.130, Math.toRadians(71));
 
-    private final Pose endPose = new Pose(54.744,35.897, Math.toRadians(112));
+    private final Pose endPose = new Pose(86.765,35.898, Math.toRadians(71));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,

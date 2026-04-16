@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.geometry.*;
 import com.pedropathing.util.*;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -24,7 +25,8 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
     private Intake intake;
     private Belt belt;
     private boolean shotsTriggered = false;
-
+    private VoltageSensor voltageSensor;
+    private double shooterSpeed = SHOOTER_55P_POWER;
     public enum PathState {
         // START POSITION_END POSITION
         // DRIVE > MOVEMENT STATE
@@ -82,7 +84,6 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                 driveStack3PosEndPos,
                 driveStack3PosShootPos,
                 driveShootPosEndPos;
-
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -241,14 +242,16 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        // TODO add in any other init mechanisms
+        //add in any other init mechanisms
         feederStopper.init(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
+        shooterSpeed = getShooterSpeed(voltageSensor.getVoltage());
     }
 
     public void start() {
@@ -258,7 +261,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
     }
 
     public void robotStateUpdate() {
-        shooter.run(SHOOTER_55P_POWER);
+        shooter.run(shooterSpeed);
         intake.run(INTAKE_80P_POWER);
         belt.run();
     }
@@ -283,5 +286,13 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+    }
+
+    public double getShooterSpeed(double voltage) {
+        double speed = SHOOTER_55P_POWER;
+        if (voltage > 13.8) {
+            speed = SHOOTER_52P_POWER;
+        }
+        return speed;
     }
 }
