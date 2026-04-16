@@ -1,25 +1,25 @@
 package org.firstinspires.ftc.teamcode.auton;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import com.pedropathing.geometry.*;
-import com.pedropathing.util.*;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Inside 3 Stack - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
-public class BlueInsideThreeStack extends OpMode implements DriveParams {
+@Autonomous(name = "BLUE Inside Gate+3 - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
+public class BlueInsideThreeStackWithGateOpen extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
-
-    // ---------- FEEDER FLYWHEEL SETUP ----------
+    // ---------- FEEDER FLYWHEEL-SHOOTER SETUP ----------
     private FeederFlywheelLogic  feederStopper = new FeederFlywheelLogic();
     private Shooter shooter;
     private Intake intake;
@@ -27,6 +27,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
     private boolean shotsTriggered = false;
     private VoltageSensor voltageSensor;
     private double shooterSpeed = SHOOTER_55P_POWER;
+
     public enum PathState {
         // START POSITION_END POSITION
         // DRIVE > MOVEMENT STATE
@@ -35,7 +36,8 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         SHOOT_PRELOAD,
         DRIVE_STACK1POS_SHOOTPOS,
         SHOOT_STACK1,
-        DRIVE_STACK2POS_SHOOTPOS,
+        DRIVE_STACK2POS_GATEPOS,
+        DRIVE_GATE_OPENPOS_SHOOTPS,
         SHOOT_STACK2,
         DRIVE_SHOOTPOS_ENDPOS,
         DRIVE_STACK3POS_SHOOTPOS,
@@ -72,6 +74,9 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
     private final Pose stack2aPose = new Pose(63.000, 54.000, Math.toRadians(0));
     private final Pose stack2bPose = new Pose(18.000, 59.000, Math.toRadians(0));
 
+    private final Pose gateOpen1aPose = new Pose(70.690, 69.643, Math.toRadians(180));
+    private final Pose gateOpen1bPose = new Pose(15.245, 68.466, Math.toRadians(180));
+
     private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
     private final Pose stack3bPose = new Pose(18.000, 33.000, Math.toRadians(0));
     private final Pose endPose = new Pose(39,78, Math.toRadians(135));
@@ -80,6 +85,8 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                 driveStack1PosEndPos,
                 driveStack1PosShootPos,
                 driveStack2PosEndPos,
+                driveGateOpenPosEndPos,
+                driveGateOpenPosShootPos,
                 driveStack2PosShootPos,
                 driveStack3PosEndPos,
                 driveStack3PosShootPos,
@@ -105,6 +112,16 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         driveStack2PosEndPos = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, stack2aPose, stack2bPose))
                 .setLinearHeadingInterpolation(stack2aPose.getHeading(), stack2bPose.getHeading())
+                .build();
+
+        driveGateOpenPosEndPos = follower.pathBuilder()
+                .addPath(new BezierCurve(stack2bPose, gateOpen1aPose, gateOpen1bPose))
+                .setLinearHeadingInterpolation(stack1Pose.getHeading(), gateOpen1bPose.getHeading())
+                .build();
+
+        driveGateOpenPosShootPos = follower.pathBuilder()
+                .addPath(new BezierLine(gateOpen1bPose, shootPose))
+                .setLinearHeadingInterpolation(gateOpen1bPose.getHeading(), shootPose.getHeading())
                 .build();
 
         driveStack2PosShootPos = follower.pathBuilder()
@@ -138,7 +155,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
 
             case SHOOT_PRELOAD:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -152,7 +169,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                 break;
 
             case DRIVE_STACK1POS_SHOOTPOS:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     follower.followPath(driveStack1PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK1); // reset the timer & make new state
                 }
@@ -160,7 +177,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
 
             case SHOOT_STACK1:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -168,21 +185,28 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                     } else if (shotsTriggered && !feederStopper.isBusy()) {
                         // shots are done free to transition
                         follower.followPath(driveStack2PosEndPos, true);
-                        setPathState(PathState.DRIVE_STACK2POS_SHOOTPOS);
+                        setPathState(PathState.DRIVE_STACK2POS_GATEPOS);
                     }
                 }
                 break;
 
-            case DRIVE_STACK2POS_SHOOTPOS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveStack2PosShootPos, true);
+            case DRIVE_STACK2POS_GATEPOS:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                    follower.followPath(driveGateOpenPosEndPos, true);
+                    setPathState(PathState.DRIVE_GATE_OPENPOS_SHOOTPS); // reset the timer & make new state
+                }
+                break;
+
+            case DRIVE_GATE_OPENPOS_SHOOTPS:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                    follower.followPath(driveGateOpenPosShootPos, true);
                     setPathState(PathState.SHOOT_STACK2); // reset the timer & make new state
                 }
                 break;
 
             case SHOOT_STACK2:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -196,14 +220,14 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
                 }
                 break;
             case DRIVE_STACK3POS_SHOOTPOS:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     follower.followPath(driveStack3PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK3); // reset the timer & make new state
                 }
                 break;
             case SHOOT_STACK3:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -218,7 +242,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
 
             case DRIVE_SHOOTPOS_ENDPOS:
                 // all done!
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     stopSubsystems();
                     telemetry.addLine("Done all Paths");
                 }

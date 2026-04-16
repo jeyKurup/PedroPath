@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "red", preselectTeleOp = "TeleOp Decode Drive Game")
 public class RedInsideThreeStack extends OpMode implements DriveParams {
 
     private Follower follower;

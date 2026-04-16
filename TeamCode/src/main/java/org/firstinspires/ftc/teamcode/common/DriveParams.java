@@ -75,4 +75,6 @@ public interface DriveParams {
     double FEEDER_FEED_POWER = 1.0;
     double READY_STATE_WAIT_TIME = 1.0;
 
+    double PATH_TIMEOUT_SECONDS = 7.0;
+
 }

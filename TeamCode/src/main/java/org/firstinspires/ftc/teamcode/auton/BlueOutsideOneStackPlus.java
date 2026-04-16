@@ -13,12 +13,11 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Outside 1 Stack+ - WORLDS", group = "Pathing", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "Blue Outside 1 Stack+ - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
 public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
-
     // ---------- FEEDER FLYWHEEL SETUP ----------
     private FeederFlywheelLogic  feederStopper = new FeederFlywheelLogic();
     private Shooter shooter;
@@ -57,9 +56,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private final Pose stack1aPose = new Pose(90.018, 37.494, Math.toRadians(0));
     private final Pose stack1bPose = new Pose(15.156, 37.088, Math.toRadians(0) );
-
     private final Pose stack1aRetPose = new Pose(53.934, 41.410, Math.toRadians(112) );
-
     private final Pose stack2aPose = new Pose(34.924, 68.461, Math.toRadians(19));
     private final Pose stack2bPose = new Pose(2.545, 28.583, Math.toRadians(19));
     private final Pose stack2cPose = new Pose(6.875, 8.114, Math.toRadians(19));
