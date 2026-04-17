@@ -14,12 +14,13 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "BLUE Inside Gate+3 - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
-public class BlueInsideThreeStackWithGateOpen extends OpMode implements DriveParams {
+@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "red", preselectTeleOp = "TeleOp Decode Drive Game")
+public class RedInsideThreeStackWithGateOpen extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
-    // ---------- FEEDER FLYWHEEL-SHOOTER SETUP ----------
+
+    // ---------- FEEDER FLYWHEEL SETUP ----------
     private FeederFlywheelLogic  feederStopper = new FeederFlywheelLogic();
     private Shooter shooter;
     private Intake intake;
@@ -49,37 +50,32 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
     private boolean keepRunning = true;
 
     private final Pose startPose = new Pose(
-            20.386209877877745,
-            122.39783853885227,
-            Math.toRadians(135)
+            120.5,
+            120,
+            Math.toRadians(45)
     );
 
     private final Pose shootPose = new Pose(
-            60,
+            81.5,
             81,
-            Math.toRadians(135)
+            Math.toRadians(45)
     );
 
     private final Pose stack1Pose = new Pose(
-            16,
-            81,
-            Math.toRadians(0)
-    );
-    private final Pose stack2Pose = new Pose(
-            18,
-            81,
-            Math.toRadians(0)
+            125.5,
+            82,
+            Math.toRadians(180)
     );
 
-    private final Pose stack2aPose = new Pose(63.000, 54.000, Math.toRadians(0));
-    private final Pose stack2bPose = new Pose(18.000, 59.000, Math.toRadians(0));
+    private final Pose stack2aPose = new Pose(84.5, 57, Math.toRadians(45));
+    private final Pose stack2bPose = new Pose(128.134, 58.822, Math.toRadians(180));
 
-    private final Pose gateOpen1aPose = new Pose(70.690, 69.643, Math.toRadians(180));
-    private final Pose gateOpen1bPose = new Pose(15.245, 68.466, Math.toRadians(180));
+    private final Pose gateOpen1aPose = new Pose(66.021, 71.10, Math.toRadians(180));
+    private final Pose gateOpen1bPose = new Pose(129.052, 69.458, Math.toRadians(0));
 
-    private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
-    private final Pose stack3bPose = new Pose(18.000, 33.000, Math.toRadians(0));
-    private final Pose endPose = new Pose(39,78, Math.toRadians(135));
+    private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(45));
+    private final Pose stack3bPose = new Pose(130.806, 34.069, Math.toRadians(180));
+    private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,
@@ -91,6 +87,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
                 driveStack3PosEndPos,
                 driveStack3PosShootPos,
                 driveShootPosEndPos;
+
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -123,6 +120,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
                 .addPath(new BezierLine(gateOpen1bPose, shootPose))
                 .setLinearHeadingInterpolation(gateOpen1bPose.getHeading(), shootPose.getHeading())
                 .build();
+
 
         driveStack2PosShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(stack2bPose, shootPose))
@@ -204,6 +202,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
                 }
                 break;
 
+
             case SHOOT_STACK2:
                 // check is follower done it's path?
                 if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
@@ -268,7 +267,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
         follower = Constants.createFollower(hardwareMap);
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        //add in any other init mechanisms
+        // TODO add in any other init mechanisms
         feederStopper.init(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -319,4 +318,5 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
         }
         return speed;
     }
+
 }
