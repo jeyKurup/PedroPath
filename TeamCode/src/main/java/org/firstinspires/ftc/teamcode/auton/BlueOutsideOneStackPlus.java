@@ -8,12 +8,14 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Outside 1 Stack+ - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
+// This will attempt 3rd stack and human player artifacts
+@Autonomous(name = "Blue Outside 1 Stack+ ", group = "blue", preselectTeleOp = "TeleOp BLUE Decode Drive Game")
 public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private Follower follower;
@@ -24,7 +26,8 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
     private Intake intake;
     private Belt belt;
     private boolean shotsTriggered = false;
-
+    private VoltageSensor voltageSensor;
+    private double shooterSpeed = SHOOTER_65P_POWER;
     public enum PathState {
         // START POSITION_END POSITION
         // DRIVE > MOVEMENT STATE
@@ -195,6 +198,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // TODO add in any other init mechanisms
         feederStopper.init(hardwareMap);
@@ -203,7 +207,8 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
-        follower.setMaxPower(0.7);
+        follower.setMaxPower(0.8);
+        shooterSpeed = shooter.getShooterSpeed(OUTSIDE_FLAG, voltageSensor.getVoltage());
     }
 
     public void start() {
@@ -213,7 +218,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
     }
 
     public void robotStateUpdate() {
-        shooter.run(SHOOTER_65P_POWER);    // >13.5v -> 62, > 12.85
+        shooter.run(shooterSpeed);    // >13.5v -> 60, > 12.85; 13.21v -> 62; 14.32v  - 58; 13.17 ->62
         intake.run(INTAKE_80P_POWER);
         belt.run();
     }
@@ -238,5 +243,9 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Shooter Speed", shooterSpeed);
     }
+
+   //  >13.5v -> 60, > 12.85; 13.21v -> 62; 14.32v  - 58; 13.17 ->62
+
 }

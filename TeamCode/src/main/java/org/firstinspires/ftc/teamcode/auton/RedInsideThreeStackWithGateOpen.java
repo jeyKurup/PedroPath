@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "red", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "RED Inside Gate+3", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
 public class RedInsideThreeStackWithGateOpen extends OpMode implements DriveParams {
 
     private Follower follower;
@@ -62,18 +62,18 @@ public class RedInsideThreeStackWithGateOpen extends OpMode implements DrivePara
     );
 
     private final Pose stack1Pose = new Pose(
-            125.5,
+            124.5,
             82,
             Math.toRadians(180)
     );
 
-    private final Pose stack2aPose = new Pose(84.5, 57, Math.toRadians(45));
-    private final Pose stack2bPose = new Pose(128.134, 58.822, Math.toRadians(180));
+    private final Pose stack2aPose = new Pose(65.609, 52.366, Math.toRadians(180));
+    private final Pose stack2bPose = new Pose(130.806, 57.821, Math.toRadians(180));
 
     private final Pose gateOpen1aPose = new Pose(66.021, 71.10, Math.toRadians(180));
     private final Pose gateOpen1bPose = new Pose(129.052, 69.458, Math.toRadians(0));
 
-    private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(45));
+    private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(180));
     private final Pose stack3bPose = new Pose(130.806, 34.069, Math.toRadians(180));
     private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
@@ -309,14 +309,14 @@ public class RedInsideThreeStackWithGateOpen extends OpMode implements DrivePara
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Shooter Speed", shooterSpeed);
     }
 
     public double getShooterSpeed(double voltage) {
-        double speed = SHOOTER_55P_POWER;
-        if (voltage > 13.8) {
-            speed = SHOOTER_52P_POWER;
+        double speed = SHOOTER_57P_POWER;
+        if (voltage > 13.5) {
+            speed = SHOOTER_55P_POWER;
         }
         return speed;
     }
-
 }

@@ -14,13 +14,13 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "BLUE Inside Gate+3 - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "BLUE Inside Gate+3", group = "blue", preselectTeleOp = "TeleOp BLUE Decode Drive Game")
 public class BlueInsideThreeStackWithGateOpen extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
     // ---------- FEEDER FLYWHEEL-SHOOTER SETUP ----------
-    private FeederFlywheelLogic  feederStopper = new FeederFlywheelLogic();
+    private FeederFlywheelLogic feederStopper = new FeederFlywheelLogic();
     private Shooter shooter;
     private Intake intake;
     private Belt belt;
@@ -79,18 +79,18 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
 
     private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
     private final Pose stack3bPose = new Pose(18.000, 33.000, Math.toRadians(0));
-    private final Pose endPose = new Pose(39,78, Math.toRadians(135));
+    private final Pose endPose = new Pose(39, 78, Math.toRadians(135));
 
     private PathChain driveStartPosShootPos,
-                driveStack1PosEndPos,
-                driveStack1PosShootPos,
-                driveStack2PosEndPos,
-                driveGateOpenPosEndPos,
-                driveGateOpenPosShootPos,
-                driveStack2PosShootPos,
-                driveStack3PosEndPos,
-                driveStack3PosShootPos,
-                driveShootPosEndPos;
+            driveStack1PosEndPos,
+            driveStack1PosShootPos,
+            driveStack2PosEndPos,
+            driveGateOpenPosEndPos,
+            driveGateOpenPosShootPos,
+            driveStack2PosShootPos,
+            driveStack3PosEndPos,
+            driveStack3PosShootPos,
+            driveShootPosEndPos;
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -275,7 +275,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
-        shooterSpeed = getShooterSpeed(voltageSensor.getVoltage());
+        shooterSpeed = shooter.getShooterSpeed(INSIDE_FLAG, voltageSensor.getVoltage());
     }
 
     public void start() {
@@ -290,12 +290,13 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
         belt.run();
     }
 
-    public void stopSubsystems(){
+    public void stopSubsystems() {
         shooter.stop();
         intake.stop();
         belt.stop();
         keepRunning = false;
     }
+
     @Override
     public void loop() {
         follower.update();
@@ -310,13 +311,7 @@ public class BlueInsideThreeStackWithGateOpen extends OpMode implements DrivePar
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Shooter Speed", shooterSpeed);
     }
 
-    public double getShooterSpeed(double voltage) {
-        double speed = SHOOTER_55P_POWER;
-        if (voltage > 13.8) {
-            speed = SHOOTER_52P_POWER;
-        }
-        return speed;
-    }
 }

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Blue Inside 3 Stack - WORLDS", group = "blue", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "Blue Inside 3 Stack", group = "blue", preselectTeleOp = "TeleOp BLUE Decode Drive Game")
 public class BlueInsideThreeStack extends OpMode implements DriveParams {
 
     private Follower follower;
@@ -251,7 +251,7 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
-        shooterSpeed = getShooterSpeed(voltageSensor.getVoltage());
+        shooterSpeed = shooter.getShooterSpeed(INSIDE_FLAG, voltageSensor.getVoltage());
     }
 
     public void start() {
@@ -288,11 +288,4 @@ public class BlueInsideThreeStack extends OpMode implements DriveParams {
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
     }
 
-    public double getShooterSpeed(double voltage) {
-        double speed = SHOOTER_55P_POWER;
-        if (voltage > 13.8) {
-            speed = SHOOTER_52P_POWER;
-        }
-        return speed;
-    }
 }

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,14 +11,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 
 import java.util.List;
 
-@Disabled
-@TeleOp(name="TeleOp Decode Drive Game", group = "1")
-public class RobotAprilTagAlignmentOld extends LinearOpMode implements DriveParams{
+
+@TeleOp(name="TeleOp RED Decode Drive Game", group = "1")
+public class RobotAprilTagRedAlignment extends LinearOpMode implements DriveParams{
 
     // create motor objects and initialize to null
     private DcMotor leftFrontMotor  = null;
@@ -106,7 +104,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
         telemetry.addData("Battery voltage >",  voltageSensor.getVoltage());
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
         limelight.start();
 
         closeStopper();
@@ -121,7 +119,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
                 alreadyTriggeredUp = false;
             }
 
-            checkDriveSpeedToggle(gamepad1.left_bumper);
+            checkDriveSpeedToggle();
             checkShooterSpeedToggle();
 
             forward = -gamepad1.left_stick_y * currentSpeedCap;  // Reduce drive rate to currentSpeedCap.
@@ -132,23 +130,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
             }
             boolean currentButtonState = gamepad1.a;
             //
-            if (gamepad1.dpad_up && !alreadyTriggeredUp) {
-                if (shooterPosition < 0.06) {
-                    shooterPosition += 0.02;
-                }
-                alreadyTriggeredUp = true;
 
-            } else if (gamepad1.dpad_down && !alreadyTriggeredDown) {
-                if (shooterPosition > 0) {
-                    shooterPosition -= 0.02;
-                }
-                alreadyTriggeredDown = true;
-            }
-            //shooterAngle.setPosition(shooterPosition);
-            if (gamepad2.left_bumper) {
-
-                shooter(shooterSpeed);
-            }
             if (gamepad2.right_stick_y == 0) {
                 feeder.setPower(FEEDER_STOP_POWER);
             } else {
@@ -159,13 +141,10 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
                 closeStopper();
             } else if (gamepad2.dpad_up) {
                 openStopper();
-            } // else if (gamepad2.dpad_left){
-            //    pusher.setPosition(0.2);
+            }
 
-            //}
             intake(gamepad1.x);
             beltRun();
-            //moveRobot(forward, strafe, turn);
 
             if (currentButtonState && !previousButtonState) {
                 isAligning = !isAligning;
@@ -179,7 +158,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
 
             if (isAligning) {
                 performAprilTagAlignmentNew();
-            } else if (gamepad1.left_trigger > 0.3) {
+            } else if (gamepad1.leftTriggerWasPressed()) {
                 performAprilTagAlign(forward, strafe, turn);
             }else {
                 manualDrive();
@@ -201,10 +180,10 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
     }
     /**
      *
-     * @param speedToggleCurrent
+     * @param
      */
-    private void checkDriveSpeedToggle(boolean speedToggleCurrent){
-
+    private void checkDriveSpeedToggle(){
+        boolean speedToggleCurrent = gamepad1.left_bumper;
         if (speedToggleCurrent &&  (speedToggleCurrent != speedCapTogglePrev)) {
             if (currentSpeedCap == SPEED_CAP_MIN){
                 currentSpeedCap = SPEED_CAP_MAX;
@@ -228,9 +207,9 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
             shooterSpeed = SHOOTER_55P_POWER;
         }else if (gamepad2.a) {
             shooterSpeed = SHOOTER_65P_POWER;
-        }else if (gamepad2.rightBumperWasPressed()){
+        }else if (gamepad2.right_bumper){
             shooterSpeed += .01;
-        }else if (gamepad2.leftBumperWasPressed()) {
+        }else if (gamepad2.left_bumper) {
             shooterSpeed -= .01;
         }
         shooter(shooterSpeed);
@@ -310,9 +289,6 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
 
 
         // Normalize wheel powers to be less than 1.0
-//        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-//        max = Math.max(max, Math.abs(leftBackPower));
-//        max = Math.max(max, Math.abs(rightBackPower));
 
         double max = Math.max(Math.abs(leftFrontPower),
                         Math.max(Math.abs(leftBackPower),
@@ -401,8 +377,8 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
             if (!fiducialResults.isEmpty()) {
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
                     int tagID = fr.getFiducialId();
-                    // Check if AprilTag ID is 20 or 24
-                    if (tagID == 20 || tagID == 24) {
+                    // Check if AprilTag ID is 24
+                    if (tagID == 24 ) {
                         // Get offsets from center -> use these values for robot detection relative to field
                         double tx = fr.getTargetXDegrees(); // Horizontal offset
                         double ty = fr.getTargetYDegrees(); // Vertical offset
@@ -416,9 +392,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
                         // Check if aligned
                         //boolean isAligned =   Math.abs(tx) < ALIGNMENT_THRESHOLD_X; // &&
                                 //Math.abs(ty) < ALIGNMENT_THRESHOLD_Y;
-                        if (tagID == 20 && (tx < 2.0 && tx > 1.0)) {
-                            isAligned = true;
-                        }else if (tagID == 24 && (tx < 1.0 && tx > 0.5)){
+                        if (tx < 1.0 && tx > 0.5){
                             isAligned = true;
                         }
                         if (isAligned) {
@@ -531,9 +505,9 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
             if (!fiducialResults.isEmpty()) {
                 LLResultTypes.FiducialResult targetTag = null;
 
-                // Find tag 20 or 24
+                // Find tag 24
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == 20 || fr.getFiducialId() == 24) {
+                    if (fr.getFiducialId() == 24) {
                         targetTag = fr;
                         break;
                     }
@@ -548,7 +522,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
                     double turnPower = Range.clip(tx * KP_TURN, -MAX_TURN_POWER, MAX_TURN_POWER);
 
                     // Add deadband to prevent micro-adjustments
-                    if (Math.abs(turnPower) < 0.05) {
+                    if (Math.abs(turnPower) < 0.10) {
                         turnPower = 0;
                     }
 
@@ -599,8 +573,6 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
 
     private void closeStopper(){
         stopper.setPosition(GATE_CLOSED_POSITION);
-        //sleep(2);
-        //pusher.setPosition(PUSHER_RETRACT_POSITION);
     }
 
     private void openStopper(){
@@ -615,42 +587,7 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
      */
     private double calculateDistanceFromAprilTag() {
         double distance = -1.0;
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
 
-            if (!fiducialResults.isEmpty()) {
-                // Usually we want the first or specific target tag (20 or 24)
-                LLResultTypes.FiducialResult targetTag = null;
-                for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == 20 || fr.getFiducialId() == 24) {
-                        targetTag = fr;
-                        double StrafeDistance_3D = fr.getRobotPoseTargetSpace().getPosition().y;
-                   //     telemetry.addData("Fiducial " + fr.getFiducialId() , "is " + StrafeDistance_3D + " meters away");
-                        break;
-                    }
-                }
-
-                if (targetTag != null) {
-                    // Get the camera-space transform
-                    double tx = result.getTx(); // How far left or right the target is (degrees)
-                    double ty = result.getTy(); // How far up or down the target is (degrees)
-                    double ta = result.getTa(); // How big the target looks (0%-100% of the image)
-                   // telemetry.addData("Target X", tx);
-                   // telemetry.addData("Target Y", ty);
-                   // telemetry.addData("Target Area", ta);
-
-                    if (result != null && result.isValid()) {
-                        Pose3D botpose = result.getBotpose();
-                        if (botpose != null) {
-                            double x = botpose.getPosition().x;
-                            double y = botpose.getPosition().y;
-                   //         telemetry.addData("MT1 Location", "(" + x + ", " + y + ")");
-                        }
-                    }
-                }
-            }
-        }
         return distance;
     }
 
@@ -664,9 +601,9 @@ public class RobotAprilTagAlignmentOld extends LinearOpMode implements DrivePara
             if (!fiducialResults.isEmpty()) {
                 LLResultTypes.FiducialResult targetTag = null;
 
-                // Find tag 20 or 24
+                // Find tag 24
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == 20 || fr.getFiducialId() == 24) {
+                    if (fr.getFiducialId() == 24) {
                         targetTag = fr;
                         break;
                     }

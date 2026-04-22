@@ -8,12 +8,13 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-
-@Autonomous(name = "Red Outside 1 Stack+ - WORLDS", group = "red", preselectTeleOp = "TeleOp Decode Drive Game")
+// This will attempt 3rd stack and human player artifacts
+@Autonomous(name = "Red Outside 1 Stack+", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
 public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
 
     private Follower follower;
@@ -25,6 +26,8 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
     private Intake intake;
     private Belt belt;
     private boolean shotsTriggered = false;
+    private VoltageSensor voltageSensor;
+    private double shooterSpeed = SHOOTER_65P_POWER;
 
     public enum PathState {
         // START POSITION_END POSITION
@@ -47,26 +50,26 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
     private final Pose startPose = new Pose(
             82.322,
             9.841,
-            Math.toRadians(71) );
+            Math.toRadians(68) );
 
     private final Pose shootPose = new Pose(
             83.605,       //59
                10.960,        // 11
-            Math.toRadians(71)
+            Math.toRadians(68)
     );
 
     private final Pose stack1aPose = new Pose(52.996, 47.252, Math.toRadians(180));
     private final Pose stack1bPose = new Pose(126.344, 38.265, Math.toRadians(180) );
 
-    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(71) );
+    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(68) );
 
-    private final Pose stack2aPose = new Pose(131.530, 53.890, Math.toRadians(71));
-    private final Pose stack2bPose = new Pose(134.439, 20.459, Math.toRadians(160));
-    private final Pose stack2cPose = new Pose(132.365, 9.994, Math.toRadians(71));
+    private final Pose stack2aPose = new Pose(106.214, 42.948, Math.toRadians(71));
+    private final Pose stack2bPose = new Pose(138.537, 22.953, Math.toRadians(145));
+    private final Pose stack2cPose = new Pose(132.009, 6.876, Math.toRadians(145));
 
     private final Pose stack2RetPose = new Pose(99.936, 63.130, Math.toRadians(71));
 
-    private final Pose endPose = new Pose(86.765,35.898, Math.toRadians(71));
+    private final Pose endPose = new Pose(86.765,35.898, Math.toRadians(68));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,
@@ -198,6 +201,7 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // TODO add in any other init mechanisms
         feederStopper.init(hardwareMap);
@@ -206,7 +210,9 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
-        follower.setMaxPower(0.7);
+        follower.setMaxPower(0.8);
+        shooterSpeed = shooter.getShooterSpeed(OUTSIDE_FLAG, voltageSensor.getVoltage());
+
     }
 
     public void start() {
@@ -217,6 +223,7 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
 
     public void robotStateUpdate() {
         shooter.run(SHOOTER_65P_POWER);    // >13.5v -> 62, > 12.85
+        shooter.run(shooterSpeed);    // >13.5v -> 60, > 12.85; 13.21v -> 62; 14.32v  - 58; 13.17 ->62
         intake.run(INTAKE_80P_POWER);
         belt.run();
     }
@@ -241,5 +248,6 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("Shooter Speed", shooterSpeed);
     }
 }

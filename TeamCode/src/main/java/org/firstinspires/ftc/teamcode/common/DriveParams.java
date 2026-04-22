@@ -20,6 +20,7 @@ public interface DriveParams {
     double SHOOTER_60P_POWER = 0.60;
     double SHOOTER_62P_POWER = 0.62;
     double SHOOTER_65P_POWER = 0.65;
+    double SHOOTER_67P_POWER = 0.67;
     double SHOOTER_70P_POWER = 0.70;
     // 5000 RPM goBILDA bare motor: 28 ticks/rev -> max ~2333 ticks/sec; 0.70 * 2333 ≈ 1633
     double SHOOTER_70P_VELOCITY = 1633.0;
@@ -76,5 +77,18 @@ public interface DriveParams {
     double READY_STATE_WAIT_TIME = 1.0;
 
     double PATH_TIMEOUT_SECONDS = 7.0;
+
+    boolean INSIDE_FLAG = true;
+    boolean OUTSIDE_FLAG = false;
+
+    double CAMERA_HEIGHT_CM = 43.50;
+
+    double CAMERA_ANGLE_DEGREES = 9.25;
+
+    double GOAL_HEIGHT = 74.95;
+
+    double distance = 0;
+    double DST1 = 308.5;
+
 
 }

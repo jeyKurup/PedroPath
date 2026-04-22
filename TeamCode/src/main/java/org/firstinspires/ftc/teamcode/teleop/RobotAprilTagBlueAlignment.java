@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,14 +11,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 
 import java.util.List;
 
 
-@TeleOp(name="TeleOp Decode Drive Game", group = "1")
-public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
+@TeleOp(name="TeleOp BLUE Decode Drive Game", group = "1")
+public class RobotAprilTagBlueAlignment extends LinearOpMode implements DriveParams{
 
     // create motor objects and initialize to null
     private DcMotor leftFrontMotor  = null;
@@ -106,7 +104,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
         telemetry.addData("Battery voltage >",  voltageSensor.getVoltage());
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(2);
+        limelight.pipelineSwitch(0);
         limelight.start();
 
         closeStopper();
@@ -121,7 +119,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                 alreadyTriggeredUp = false;
             }
 
-            checkDriveSpeedToggle(gamepad1.left_bumper);
+            checkDriveSpeedToggle();
             checkShooterSpeedToggle();
 
             forward = -gamepad1.left_stick_y * currentSpeedCap;  // Reduce drive rate to currentSpeedCap.
@@ -132,23 +130,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
             }
             boolean currentButtonState = gamepad1.a;
             //
-            if (gamepad1.dpad_up && !alreadyTriggeredUp) {
-                if (shooterPosition < 0.06) {
-                    shooterPosition += 0.02;
-                }
-                alreadyTriggeredUp = true;
 
-            } else if (gamepad1.dpad_down && !alreadyTriggeredDown) {
-                if (shooterPosition > 0) {
-                    shooterPosition -= 0.02;
-                }
-                alreadyTriggeredDown = true;
-            }
-            //shooterAngle.setPosition(shooterPosition);
-            if (gamepad2.left_bumper) {
-
-                shooter(shooterSpeed);
-            }
             if (gamepad2.right_stick_y == 0) {
                 feeder.setPower(FEEDER_STOP_POWER);
             } else {
@@ -159,13 +141,10 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                 closeStopper();
             } else if (gamepad2.dpad_up) {
                 openStopper();
-            } // else if (gamepad2.dpad_left){
-            //    pusher.setPosition(0.2);
+            }
 
-            //}
             intake(gamepad1.x);
             beltRun();
-            //moveRobot(forward, strafe, turn);
 
             if (currentButtonState && !previousButtonState) {
                 isAligning = !isAligning;
@@ -179,7 +158,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
 
             if (isAligning) {
                 performAprilTagAlignmentNew();
-            } else if (gamepad1.left_trigger > 0.3) {
+            } else if (gamepad1.leftTriggerWasPressed()) {
                 performAprilTagAlign(forward, strafe, turn);
             }else {
                 manualDrive();
@@ -201,10 +180,10 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
     }
     /**
      *
-     * @param speedToggleCurrent
+     * @param
      */
-    private void checkDriveSpeedToggle(boolean speedToggleCurrent){
-
+    private void checkDriveSpeedToggle(){
+        boolean speedToggleCurrent = gamepad1.left_bumper;
         if (speedToggleCurrent &&  (speedToggleCurrent != speedCapTogglePrev)) {
             if (currentSpeedCap == SPEED_CAP_MIN){
                 currentSpeedCap = SPEED_CAP_MAX;
@@ -228,9 +207,9 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
             shooterSpeed = SHOOTER_55P_POWER;
         }else if (gamepad2.a) {
             shooterSpeed = SHOOTER_65P_POWER;
-        }else if (gamepad2.rightBumperWasPressed()){
+        }else if (gamepad2.right_bumper){
             shooterSpeed += .01;
-        }else if (gamepad2.leftBumperWasPressed()) {
+        }else if (gamepad2.left_bumper) {
             shooterSpeed -= .01;
         }
         shooter(shooterSpeed);
@@ -310,9 +289,6 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
 
 
         // Normalize wheel powers to be less than 1.0
-//        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-//        max = Math.max(max, Math.abs(leftBackPower));
-//        max = Math.max(max, Math.abs(rightBackPower));
 
         double max = Math.max(Math.abs(leftFrontPower),
                         Math.max(Math.abs(leftBackPower),
@@ -402,7 +378,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
                     int tagID = fr.getFiducialId();
                     // Check if AprilTag ID is 20 or 24
-                    if (tagID == 20 || tagID == 24) {
+                    if (tagID == 20 ) {
                         // Get offsets from center -> use these values for robot detection relative to field
                         double tx = fr.getTargetXDegrees(); // Horizontal offset
                         double ty = fr.getTargetYDegrees(); // Vertical offset
@@ -416,9 +392,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                         // Check if aligned
                         //boolean isAligned =   Math.abs(tx) < ALIGNMENT_THRESHOLD_X; // &&
                                 //Math.abs(ty) < ALIGNMENT_THRESHOLD_Y;
-                        if (tagID == 20 && (tx < 2.0 && tx > 1.0)) {
-                            isAligned = true;
-                        }else if (tagID == 24 && (tx < 1.0 && tx > 0.5)){
+                        if (tx < 2.0 && tx > 1.0) {
                             isAligned = true;
                         }
                         if (isAligned) {
@@ -533,7 +507,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
 
                 // Find tag 20 or 24
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == 20 || fr.getFiducialId() == 24) {
+                    if (fr.getFiducialId() == 20) {
                         targetTag = fr;
                         break;
                     }
@@ -548,7 +522,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
                     double turnPower = Range.clip(tx * KP_TURN, -MAX_TURN_POWER, MAX_TURN_POWER);
 
                     // Add deadband to prevent micro-adjustments
-                    if (Math.abs(turnPower) < 0.05) {
+                    if (Math.abs(turnPower) < 0.10) {
                         turnPower = 0;
                     }
 
@@ -629,7 +603,7 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
 
                 // Find tag 20 or 24
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    if (fr.getFiducialId() == 20 || fr.getFiducialId() == 24) {
+                    if (fr.getFiducialId() == 20) {
                         targetTag = fr;
                         break;
                     }
@@ -694,5 +668,12 @@ public class RobotAprilTagAlignment extends LinearOpMode implements DriveParams{
         telemetry.addData("Step Size", "%.4f (B Button)", stepSizes[stepIndex]);
     }
 
+    public double getDistance(double ty) {
+        double angleToTarget = CAMERA_ANGLE_DEGREES + ty;
+        double heightDifference = GOAL_HEIGHT - CAMERA_HEIGHT_CM;
+        //telemetry.addData("Angle to the Camera (Total Angle): ", angleToTarget);
+
+        return (heightDifference / Math.tan(Math.toRadians(angleToTarget)));
+    }
 
 }

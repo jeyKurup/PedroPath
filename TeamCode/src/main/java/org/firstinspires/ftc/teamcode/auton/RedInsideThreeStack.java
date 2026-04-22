@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Red Inside 3 Stack - WORLDS", group = "red", preselectTeleOp = "TeleOp Decode Drive Game")
+@Autonomous(name = "Red Inside 3 Stack", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
 public class RedInsideThreeStack extends OpMode implements DriveParams {
 
     private Follower follower;
@@ -292,9 +292,9 @@ public class RedInsideThreeStack extends OpMode implements DriveParams {
     }
 
     public double getShooterSpeed(double voltage) {
-        double speed = SHOOTER_55P_POWER;
+        double speed = SHOOTER_57P_POWER;
         if (voltage > 13.8) {
-            speed = SHOOTER_52P_POWER;
+            speed = SHOOTER_55P_POWER;
         }
         return speed;
     }
