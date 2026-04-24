@@ -37,7 +37,7 @@ public interface DriveParams {
     // ------------ GATE CONSTANTS ------------
     double GATE_OPEN_POSITION = 0.75;
     double GATE_CLOSED_POSITION = 0.55;
-    double GATE_OPEN_TIME = 2.5;
+    double GATE_OPEN_TIME = 2.25;
     double GATE_CLOSE_DELAY = 0.2;
 
     // ------------ MOTIF CONSTANTS ------------
