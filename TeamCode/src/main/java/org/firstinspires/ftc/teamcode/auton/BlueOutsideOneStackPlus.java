@@ -114,7 +114,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
                 break;
             case SHOOT_PRELOAD:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -128,7 +128,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
                 break;
 
             case DRIVE_STACK1POS_SHOOTPOS:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     follower.followPath(driveStack1PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK1); // reset the timer & make new state
                 }
@@ -136,7 +136,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
             case SHOOT_STACK1:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);
@@ -150,7 +150,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
                 break;
 
             case DRIVE_STACK2POS_SHOOTPOS:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     follower.followPath(driveStack2PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK2); // reset the timer & make new state
                 }
@@ -158,7 +158,7 @@ public class BlueOutsideOneStackPlus extends OpMode implements DriveParams {
 
             case SHOOT_STACK2:
                 // check is follower done it's path?
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);

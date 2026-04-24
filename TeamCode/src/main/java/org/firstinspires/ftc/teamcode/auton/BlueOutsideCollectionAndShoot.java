@@ -70,9 +70,17 @@ public class BlueOutsideCollectionAndShoot extends OpMode implements DriveParams
 
     private PathState pathState;
 
-    private final Pose startPose = new Pose(59, 10, Math.toRadians(109));
-    private final Pose shootPose = new Pose(59, 10, Math.toRadians(109));
-    private final Pose parkPose = new Pose(48, 36, Math.toRadians(109));
+    private final Pose startPose = new Pose(
+            59.178,
+            9.841,
+            Math.toRadians(112) );
+
+    private final Pose shootPose = new Pose(
+            59.178,
+            9.841,
+            Math.toRadians(112)
+    );
+    private final Pose parkPose = new Pose(54.744,35.897, Math.toRadians(112));
 
     private Pose detectedArtifactPose = null;
     private PathChain currentPath;

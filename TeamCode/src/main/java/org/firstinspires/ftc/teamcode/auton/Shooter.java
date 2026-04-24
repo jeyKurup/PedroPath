@@ -15,7 +15,6 @@ public class Shooter implements DriveParams {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setDirection(DcMotor.Direction.REVERSE);
 
-
     }
 
     public void run(double speed) {

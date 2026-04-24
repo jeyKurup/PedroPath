@@ -13,13 +13,13 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+
 // This will attempt 3rd stack and human player artifacts
-@Autonomous(name = "Red Outside 1 Stack+", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
-public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
+@Autonomous(name = "Blue Outside 1 Stack+Collect", group = "blue", preselectTeleOp = "TeleOp BLUE Decode Drive Game")
+public class BlueOutsideOneStackPlusCollect extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
-
     // ---------- FEEDER FLYWHEEL SETUP ----------
     private FeederFlywheelLogic  feederStopper = new FeederFlywheelLogic();
     private Shooter shooter;
@@ -28,7 +28,6 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
     private boolean shotsTriggered = false;
     private VoltageSensor voltageSensor;
     private double shooterSpeed = SHOOTER_65P_POWER;
-
     public enum PathState {
         // START POSITION_END POSITION
         // DRIVE > MOVEMENT STATE
@@ -39,8 +38,9 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         SHOOT_STACK1,
         DRIVE_STACK2POS_SHOOTPOS,
         SHOOT_STACK2,
+        DRIVE_COLLECTPOS_SHOOTPOS,
+        SHOOT_COLLECT,
         DRIVE_SHOOTPOS_ENDPOS
-
     }
 
     PathState pathState;
@@ -48,36 +48,36 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
     private boolean keepRunning = true;
 
     private final Pose startPose = new Pose(
-            82.322,
+            59.178,
             9.841,
-            Math.toRadians(68) );
+            Math.toRadians(113.5) );
 
     private final Pose shootPose = new Pose(
-            83.605,       //59
-               10.960,        // 11
-            Math.toRadians(68)
+            59.178,       //59
+               9.841,        // 11
+            Math.toRadians(113.5)
     );
 
-    private final Pose stack1aPose = new Pose(52.996, 47.252, Math.toRadians(180));
-    private final Pose stack1bPose = new Pose(126.344, 38.265, Math.toRadians(180) );
-
-    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(68) );
-
-    private final Pose stack2aPose = new Pose(106.214, 42.948, Math.toRadians(71));
-    private final Pose stack2bPose = new Pose(138.537, 22.953, Math.toRadians(120));
-    private final Pose stack2cPose = new Pose(135.216, 7.589, Math.toRadians(120));
-
-    private final Pose stack2RetPose = new Pose(99.936, 63.130, Math.toRadians(71));
-
-    private final Pose endPose = new Pose(86.765,35.898, Math.toRadians(68));
+    private final Pose stack1aPose = new Pose(90.018, 37.494, Math.toRadians(0));
+    private final Pose stack1bPose = new Pose(15.156, 37.088, Math.toRadians(0) );
+    private final Pose stack1aRetPose = new Pose(53.934, 41.410, Math.toRadians(112) );
+    private final Pose stack2aPose = new Pose(34.924, 68.461, Math.toRadians(19));
+    private final Pose stack2bPose = new Pose(2.545, 28.583, Math.toRadians(19));
+    private final Pose stack2cPose = new Pose(6.875, 8.114, Math.toRadians(19));
+    private final Pose stack2RetPose = new Pose(35.170, 39.238, Math.toRadians(112));
+    private final Pose collectaPose = new Pose(37.141, 61.586, Math.toRadians(68));
+    private final Pose collectbPose = new Pose(5.132, 8.206, Math.toRadians(68));
+    private final Pose collectRetaPose = new Pose(34.578, 49.465, Math.toRadians(112));
+    private final Pose endPose = new Pose(54.744,35.897, Math.toRadians(112));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,
                 driveStack1PosShootPos,
                 driveStack2PosEndPos,
                 driveStack2PosShootPos,
+                driveCollectPosEndPos,
+                driveCollectPosShootPos,
                 driveShootPosEndPos;
-
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
@@ -99,6 +99,15 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         driveStack2PosShootPos = follower.pathBuilder()
                 .addPath(new BezierCurve(stack2bPose, stack2RetPose, shootPose))
                 .setLinearHeadingInterpolation(stack2bPose.getHeading(), shootPose.getHeading())
+                .build();
+        driveCollectPosEndPos = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, collectaPose, collectbPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), collectbPose.getHeading())
+                .build();
+
+        driveCollectPosShootPos = follower.pathBuilder()
+                .addPath(new BezierCurve(collectbPose, collectRetaPose, shootPose))
+                .setLinearHeadingInterpolation(collectbPose.getHeading(), shootPose.getHeading())
                 .build();
 
         driveShootPosEndPos = follower.pathBuilder()
@@ -168,6 +177,27 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
                         shotsTriggered = true;
                     } else if (shotsTriggered && !feederStopper.isBusy()) {
                         // shots are done free to transition
+                        follower.followPath(driveCollectPosEndPos, true);
+                        setPathState(PathState.DRIVE_COLLECTPOS_SHOOTPOS);
+                    }
+                }
+                break;
+            case DRIVE_COLLECTPOS_SHOOTPOS:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                    follower.followPath(driveCollectPosShootPos, true);
+                    setPathState(PathState.SHOOT_COLLECT); // reset the timer & make new state
+                }
+                break;
+
+            case SHOOT_COLLECT:
+                // check is follower done it's path?
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                    // requested shots yet?
+                    if (!shotsTriggered) {
+                        feederStopper.fireShots(true);
+                        shotsTriggered = true;
+                    } else if (shotsTriggered && !feederStopper.isBusy()) {
+                        // shots are done free to transition
 
                         follower.followPath(driveShootPosEndPos, true);
                         setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
@@ -210,9 +240,8 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         belt = new Belt(hardwareMap);
         buildPaths();
         follower.setPose(startPose);
-        follower.setMaxPower(0.8);
+        //follower.setMaxPower(0.9);
         shooterSpeed = shooter.getShooterSpeed(OUTSIDE_FLAG, voltageSensor.getVoltage());
-
     }
 
     public void start() {
@@ -222,7 +251,6 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
     }
 
     public void robotStateUpdate() {
-        shooter.run(SHOOTER_65P_POWER);    // >13.5v -> 62, > 12.85
         shooter.run(shooterSpeed);    // >13.5v -> 60, > 12.85; 13.21v -> 62; 14.32v  - 58; 13.17 ->62
         intake.run(INTAKE_80P_POWER);
         belt.run();
@@ -250,4 +278,6 @@ public class RedOutsideOneStackPlus extends OpMode implements DriveParams {
         telemetry.addData("Path time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Shooter Speed", shooterSpeed);
     }
+
+
 }

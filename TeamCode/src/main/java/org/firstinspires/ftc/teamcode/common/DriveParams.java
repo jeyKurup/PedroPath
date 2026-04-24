@@ -38,6 +38,7 @@ public interface DriveParams {
     double GATE_OPEN_POSITION = 0.75;
     double GATE_CLOSED_POSITION = 0.55;
     double GATE_OPEN_TIME = 2.5;
+    double GATE_CLOSE_DELAY = 0.2;
 
     // ------------ MOTIF CONSTANTS ------------
     int MOTIF_LEFT = 21;
@@ -76,7 +77,7 @@ public interface DriveParams {
     double FEEDER_FEED_POWER = 1.0;
     double READY_STATE_WAIT_TIME = 1.0;
 
-    double PATH_TIMEOUT_SECONDS = 7.0;
+    double PATH_TIMEOUT_SECONDS = 6.0;
 
     boolean INSIDE_FLAG = true;
     boolean OUTSIDE_FLAG = false;

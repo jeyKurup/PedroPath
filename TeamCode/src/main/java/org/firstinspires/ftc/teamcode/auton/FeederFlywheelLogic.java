@@ -68,9 +68,11 @@ public class FeederFlywheelLogic implements DriveParams {
                 readyToFireShots = false;
                 gateServo.setPosition(GATE_CLOSED_POSITION);
                 feederServo.setPower(FEEDER_STOP_POWER);
-                stateTimer.reset();
 
-                feederState = FeederState.IDLE;
+                if (stateTimer.seconds() > GATE_CLOSE_DELAY) {
+                    stateTimer.reset();
+                    feederState = FeederState.IDLE;
+                }
                 break;
 
         }
