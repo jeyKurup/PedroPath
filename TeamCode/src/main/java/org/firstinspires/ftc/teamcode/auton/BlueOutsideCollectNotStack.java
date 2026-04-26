@@ -66,12 +66,13 @@ public class BlueOutsideCollectNotStack extends OpMode implements DriveParams {
     //private final Pose stack2cPose = new Pose(6.875, 8.114, Math.toRadians(19));
     //private final Pose stack2RetPose = new Pose(35.170, 39.238, Math.toRadians(112));
     private final Pose collectaPose = new Pose(65.490, 24.253, Math.toRadians(40));
-    private final Pose collectbPose = new Pose(21.264, 21.679, Math.toRadians(40));
+    private final Pose collectbPose = new Pose(21.618, 17.603, Math.toRadians(40));//21.264 21.679
     private final Pose collectcPose = new Pose(4.562, 28.600, Math.toRadians(40));
     private final Pose collectdPose = new Pose(7.755, 6.914, Math.toRadians(40));
 
-    private final Pose collectRetaPose = new Pose(31.193, 31.785, Math.toRadians(40));
-    private final Pose endPose = new Pose(54.744,35.897, Math.toRadians(113.5));
+    private final Pose collectRetaPose = new Pose(35.448, 16.569, Math.toRadians(40));
+    private final Pose collectRetbPose = new Pose(51.664, 14.704, Math.toRadians(40));
+    private final Pose endPose = new Pose(50.320,35.274, Math.toRadians(113.5));
 
     private PathChain driveStartPosShootPos,
                 driveStack1PosEndPos,
@@ -109,7 +110,7 @@ public class BlueOutsideCollectNotStack extends OpMode implements DriveParams {
                 .build();
 
         driveCollectPosShootPos = follower.pathBuilder()
-                .addPath(new BezierCurve(collectcPose, collectRetaPose, shootPose))
+                .addPath(new BezierCurve(collectcPose, collectRetaPose, collectRetbPose, shootPose))
                 .setLinearHeadingInterpolation(collectcPose.getHeading(), shootPose.getHeading())
                 .build();
 
@@ -201,9 +202,13 @@ public class BlueOutsideCollectNotStack extends OpMode implements DriveParams {
                         shotsTriggered = true;
                     } else if (shotsTriggered && !feederStopper.isBusy()) {
                         // shots are done free to transition
-
-                        follower.followPath(driveShootPosEndPos, true);
-                        setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
+                        if (opModeTimer.getElapsedTimeSeconds() < COLLECT_SHOOT_DEADLINE){
+                            follower.followPath(driveCollectPosEndPos, true);
+                            setPathState(PathState.DRIVE_COLLECTPOS_SHOOTPOS);
+                        }else{
+                            follower.followPath(driveShootPosEndPos, true);
+                            setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
+                        }
                     }
                 }
                 break;

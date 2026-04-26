@@ -53,7 +53,7 @@ public class TeleOpSetRobotPositionRedOutside extends OpMode implements DrivePar
         telemetry.addData("Heading angle (DEGREES)", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.addData("X coordinate (IN)", pose2D.getX(DistanceUnit.INCH));
         telemetry.addData("Y coordinate (IN)", pose2D.getY(DistanceUnit.INCH));
-        telemetry.addData("Desired Heading angle:", -22);
+        telemetry.addData("Desired Heading angle:", -23.5);
         telemetry.addData("Actual Heading angle (PinPnt):", pose2D.getHeading(AngleUnit.DEGREES));
 
         double angleTurned = Math.abs(pose2D.getHeading(AngleUnit.DEGREES));

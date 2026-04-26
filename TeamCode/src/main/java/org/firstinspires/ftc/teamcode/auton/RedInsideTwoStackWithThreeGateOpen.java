@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "BLUE Inside 2Gate+2Stack", group = "blue", preselectTeleOp = "TeleOp BLUE Decode Drive Game")
-public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DriveParams {
+@Autonomous(name = "RED Inside 3Gate+2Stack", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
+public class RedInsideTwoStackWithThreeGateOpen extends OpMode implements DriveParams {
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -42,6 +42,7 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
         SHOOT_STACK2,
         DRIVE_SHOOTPOS_ENDPOS,
         DRIVE_STACK3POS_SHOOTPOS,
+        DRIVE_GATEOPENPOS_ENDPOS,
         SHOOT_STACK3
     }
 
@@ -50,39 +51,35 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
     private boolean keepRunning = true;
 
     private final Pose startPose = new Pose(
-            19.287,
-            121.465,
-            Math.toRadians(135)
+            120.5,
+            120,
+            Math.toRadians(45)
     );
 
     private final Pose shootPose = new Pose(
-            60,
+            81.5,
             81,
-            Math.toRadians(135)
+            Math.toRadians(45)
     );
 
     private final Pose stack1Pose = new Pose(
-            16,
-            81,
-            Math.toRadians(0)
+            124.5,
+            82,
+            Math.toRadians(180)
     );
-    private final Pose stack2Pose = new Pose(
-            18,
-            81,
-            Math.toRadians(0)
-    );
-    private final Pose gateOpen1aPose = new Pose(71.937, 76.058, Math.toRadians(180));
-    private final Pose gateOpen1bPose = new Pose(15.245, 70.5, Math.toRadians(180));
 
-    private final Pose stack2aPose = new Pose(63.000, 54.000, Math.toRadians(0));
-    private final Pose stack2bPose = new Pose(17.000, 59.000, Math.toRadians(0));
+    private final Pose gateOpen1aPose = new Pose(69.563, 76.058, Math.toRadians(180));
+    private final Pose gateOpen1bPose = new Pose(126.255, 70.5, Math.toRadians(0));//180
 
-    private final Pose gateOpen2aPose = new Pose(69.798, 66.969, Math.toRadians(180));
-    private final Pose gateOpen2bPose = new Pose(15.245, 68.466, Math.toRadians(180));
+    private final Pose stack2aPose = new Pose(65.609, 52.366, Math.toRadians(180));
+    private final Pose stack2bPose = new Pose(125.738, 55.816, Math.toRadians(180));
 
-    private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
-    private final Pose stack3bPose = new Pose(17.000, 33.000, Math.toRadians(0));
-    private final Pose endPose = new Pose(39, 78, Math.toRadians(135));
+    private final Pose gateOpen2aPose = new Pose(66.021, 71.10, Math.toRadians(180));
+    private final Pose gateOpen2bPose = new Pose(126.255, 69.458, Math.toRadians(0));
+
+    private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(180));
+    private final Pose stack3bPose = new Pose(130.806, 32.823, Math.toRadians(180));
+    private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
     private PathChain driveStartPosShootPos,
             driveStack1PosEndPos,
@@ -94,6 +91,8 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
             driveStack2PosShootPos,
             driveStack3PosEndPos,
             driveStack3PosShootPos,
+            driveShootPosGateOpen3Pos,
+            driveGateOpen3PosEndPos,
             driveShootPosEndPos;
 
     public void buildPaths() {
@@ -146,6 +145,16 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
         driveStack3PosShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(stack3bPose, shootPose))
                 .setLinearHeadingInterpolation(stack3bPose.getHeading(), shootPose.getHeading())
+                .build();
+
+        driveShootPosGateOpen3Pos = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, gateOpen2bPose))
+                .setLinearHeadingInterpolation(gateOpen2bPose.getHeading(), gateOpen2bPose.getHeading())
+                .build();
+
+        driveGateOpen3PosEndPos = follower.pathBuilder()
+                .addPath(new BezierLine(gateOpen2bPose, endPose))
+                .setLinearHeadingInterpolation(gateOpen2bPose.getHeading(), endPose.getHeading())
                 .build();
 
         driveShootPosEndPos = follower.pathBuilder()
@@ -229,13 +238,14 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
                         shotsTriggered = true;
                     } else if (shotsTriggered && !feederStopper.isBusy()) {
                         // shots are done free to transition
-
-                        follower.followPath(driveStack3PosEndPos, true);
-                        setPathState(PathState.DRIVE_STACK3POS_SHOOTPOS);
+                        follower.followPath(driveShootPosGateOpen3Pos, true);
+                        setPathState(PathState.DRIVE_GATEOPENPOS_ENDPOS);
+//                        follower.followPath(driveStack3PosEndPos, true);
+//                        setPathState(PathState.DRIVE_STACK3POS_SHOOTPOS);
                     }
                 }
-                break;
-            case DRIVE_STACK3POS_SHOOTPOS:
+                   break;
+        /*    case DRIVE_STACK3POS_SHOOTPOS:
                 if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
                     follower.followPath(driveStack3PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK3); // reset the timer & make new state
@@ -253,6 +263,12 @@ public class BlueInsideTwoStackWithTwoGateOpen extends OpMode implements DrivePa
                         follower.followPath(driveShootPosEndPos, true);
                         setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
                     }
+                }
+                break; */
+            case DRIVE_GATEOPENPOS_ENDPOS:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                    follower.followPath(driveGateOpen3PosEndPos, true);
+                    setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS); // reset the timer & make new state
                 }
                 break;
 

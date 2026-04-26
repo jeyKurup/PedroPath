@@ -45,7 +45,7 @@ public interface DriveParams {
     int MOTIF_CENTER = 22;
     double SPEED_CAP_MIN    = 0.7;
     double SPEED_CAP_MAX    = 0.90;
-
+    double COLLECT_SHOOT_DEADLINE = 25.0;
 
     double SPEED_CAP_SHOOTER = 0.80;
 

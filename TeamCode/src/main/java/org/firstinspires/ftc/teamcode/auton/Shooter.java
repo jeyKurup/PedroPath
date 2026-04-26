@@ -31,19 +31,19 @@ public class Shooter implements DriveParams {
             // Inside shooting
             speed = SHOOTER_55P_POWER;
             if (voltage > 13.8) {
-                speed = SHOOTER_53P_POWER;
+                speed = SHOOTER_52P_POWER;
             }else if (voltage > 13.0){
                 speed = SHOOTER_55P_POWER;
             }
         }else {
             // Outside/farside shooting
-            speed = SHOOTER_67P_POWER;
+            speed = SHOOTER_65P_POWER;
             if (voltage > 13.8) {   //this is good - tested
-                speed = SHOOTER_60P_POWER;
+                speed = SHOOTER_56P_POWER;
             } else if (voltage > 13.3) {
-                    speed = SHOOTER_62P_POWER;
+                    speed = SHOOTER_60P_POWER;
             }else if (voltage > 13.0){
-                speed = 0.65;
+                speed = 0.62;
             }
         }
         return speed;
