@@ -162,7 +162,7 @@ public class BlueOutsideOneStackPlusCollect extends OpMode implements DriveParam
                 break;
 
             case DRIVE_STACK2POS_SHOOTPOS:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                if (!follower.isBusy() /*|| pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS */) {
                     follower.followPath(driveStack2PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK2); // reset the timer & make new state
                 }

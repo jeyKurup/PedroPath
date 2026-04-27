@@ -187,7 +187,7 @@ public class BlueOutsideCollectNotStack extends OpMode implements DriveParams {
 //                }
 //                break;
             case DRIVE_COLLECTPOS_SHOOTPOS:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                if (!follower.isBusy() /*|| pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS */) {
                     follower.followPath(driveCollectPosShootPos, true);
                     setPathState(PathState.SHOOT_COLLECT); // reset the timer & make new state
                 }

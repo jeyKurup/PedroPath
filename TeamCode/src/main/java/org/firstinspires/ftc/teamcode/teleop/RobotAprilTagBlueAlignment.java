@@ -207,9 +207,9 @@ public class RobotAprilTagBlueAlignment extends LinearOpMode implements DrivePar
             shooterSpeed = SHOOTER_55P_POWER;
         }else if (gamepad2.a) {
             shooterSpeed = SHOOTER_65P_POWER;
-        }else if (gamepad2.right_bumper){
+        }else if (gamepad2.rightBumperWasPressed()){
             shooterSpeed += .01;
-        }else if (gamepad2.left_bumper) {
+        }else if (gamepad2.leftBumperWasPressed()) {
             shooterSpeed -= .01;
         }
         shooter(shooterSpeed);
