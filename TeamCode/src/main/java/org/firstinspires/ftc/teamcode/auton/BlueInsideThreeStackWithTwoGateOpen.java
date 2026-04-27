@@ -78,7 +78,7 @@ public class BlueInsideThreeStackWithTwoGateOpen extends OpMode implements Drive
     private final Pose stack2bPose = new Pose(15.000, 57.000, Math.toRadians(0));
 
     private final Pose gateOpen2aPose = new Pose(69.798, 66.969, Math.toRadians(180));
-    private final Pose gateOpen2bPose = new Pose(15.245, 68.466, Math.toRadians(180));
+    private final Pose gateOpen2bPose = new Pose(16.000, 68.466, Math.toRadians(180));
 
     private final Pose stack3aPose = new Pose(66.000, 30.000, Math.toRadians(0));
     private final Pose stack3bPose = new Pose(15.000, 31.000, Math.toRadians(0));

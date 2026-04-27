@@ -187,15 +187,20 @@ public class RedOutsideCollectNotStack extends OpMode implements DriveParams {
 //                }
 //                break;
             case DRIVE_COLLECTPOS_SHOOTPOS:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
-                    follower.followPath(driveCollectPosShootPos, true);
-                    setPathState(PathState.SHOOT_COLLECT); // reset the timer & make new state
+                if (!follower.isBusy() /*|| pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS */) {
+                    if (opModeTimer.getElapsedTimeSeconds() < COLLECT_SHOOT_DEADLINE) {
+                        follower.followPath(driveCollectPosShootPos, true);
+                        setPathState(PathState.SHOOT_COLLECT); // reset the timer & make new state
+                    }else {
+                        follower.followPath(driveShootPosEndPos, true);
+                        setPathState(PathState.DRIVE_SHOOTPOS_ENDPOS);
+                    }
                 }
                 break;
 
             case SHOOT_COLLECT:
                 // check is follower done it's path?
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS ) {
                     // requested shots yet?
                     if (!shotsTriggered) {
                         feederStopper.fireShots(true);

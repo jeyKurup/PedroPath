@@ -56,14 +56,14 @@ public class RedOutsideOneStackPlusCollect extends OpMode implements DriveParams
 
     private final Pose shootPose = new Pose(
             83.605,       //59
-               10.960,        // 11
-            Math.toRadians(66.5)
+               11.960,        // 11
+            Math.toRadians(68)
     );
 
     private final Pose stack1aPose = new Pose(48, 39, Math.toRadians(180));
     private final Pose stack1bPose = new Pose(126.344, 38.265, Math.toRadians(180) );
 
-    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(68) );
+    private final Pose stack1aRetPose = new Pose(86.220, 46.121, Math.toRadians(66.5) );
 
     private final Pose stack2aPose = new Pose(106.214, 42.948, Math.toRadians(66.5));
     private final Pose stack2bPose = new Pose(141, 39, Math.toRadians(120));
@@ -173,7 +173,7 @@ public class RedOutsideOneStackPlusCollect extends OpMode implements DriveParams
                 break;
 
             case DRIVE_STACK2POS_SHOOTPOS:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > PATH_TIMEOUT_SECONDS) {
+                if (!follower.isBusy()) {
                     follower.followPath(driveStack2PosShootPos, true);
                     setPathState(PathState.SHOOT_STACK2); // reset the timer & make new state
                 }
