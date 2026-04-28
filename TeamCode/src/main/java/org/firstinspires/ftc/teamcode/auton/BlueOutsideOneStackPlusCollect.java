@@ -97,7 +97,7 @@ public class BlueOutsideOneStackPlusCollect extends OpMode implements DriveParam
                 .build();
 
         driveStack2PosShootPos = follower.pathBuilder()
-                .addPath(new BezierCurve(stack2bPose, stack2RetPose, shootPose))
+                .addPath(new BezierCurve(stack2cPose, stack2RetPose, shootPose))
                 .setLinearHeadingInterpolation(stack2bPose.getHeading(), shootPose.getHeading())
                 .build();
         driveCollectPosEndPos = follower.pathBuilder()

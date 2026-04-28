@@ -74,7 +74,8 @@ public class RedInsideThreeStackWithGateOpen extends OpMode implements DrivePara
     private final Pose gateOpen1bPose = new Pose(129.052, 69.458, Math.toRadians(0));
 
     private final Pose stack3aPose = new Pose(78.5, 30, Math.toRadians(180));
-    private final Pose stack3bPose = new Pose(130.806, 34.069, Math.toRadians(180));
+    private final Pose stack3bPose = new Pose(130.806, 32.823, Math.toRadians(180));
+
     private final Pose endPose = new Pose(102.5,78, Math.toRadians(45));
 
     private PathChain driveStartPosShootPos,

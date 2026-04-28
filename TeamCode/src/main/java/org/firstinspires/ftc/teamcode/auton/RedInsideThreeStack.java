@@ -7,13 +7,14 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.common.DriveParams;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-
+@Disabled
 @Autonomous(name = "Red Inside 3 Stack", group = "red", preselectTeleOp = "TeleOp RED Decode Drive Game")
 public class RedInsideThreeStack extends OpMode implements DriveParams {
 

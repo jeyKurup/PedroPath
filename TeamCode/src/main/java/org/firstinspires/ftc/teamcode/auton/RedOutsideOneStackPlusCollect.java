@@ -57,7 +57,7 @@ public class RedOutsideOneStackPlusCollect extends OpMode implements DriveParams
     private final Pose shootPose = new Pose(
             83.605,       //59
                11.960,        // 11
-            Math.toRadians(68)
+            Math.toRadians(66.5)
     );
 
     private final Pose stack1aPose = new Pose(48, 39, Math.toRadians(180));
@@ -107,7 +107,7 @@ public class RedOutsideOneStackPlusCollect extends OpMode implements DriveParams
                 .build();
 
         driveStack2PosShootPos = follower.pathBuilder()
-                .addPath(new BezierCurve(stack2bPose, stack2RetPose, shootPose))
+                .addPath(new BezierCurve(stack2cPose, stack2RetPose, shootPose))
                 .setLinearHeadingInterpolation(stack2bPose.getHeading(), shootPose.getHeading())
                 .build();
 

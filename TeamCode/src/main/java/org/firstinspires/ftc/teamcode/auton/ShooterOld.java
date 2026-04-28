@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.auton;
+/*
+ DO NOT USE THIS CLASS ANYMORE. IT IS DEPRECATED.
+ Use Shooter.java
+*/
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+@Deprecated
 public class ShooterOld {
     private DcMotorEx shooter;
 
